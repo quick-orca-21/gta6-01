@@ -9,7 +9,7 @@ import { createEffects } from './effects.js';
 import { createHud } from './hud.js';
 import { MissionRunner } from './missions.js';
 import { animatePerson, createCrowd, knockDown, scareCrowd, updateCrowd } from './pedestrians.js';
-import { flashLights, nearestPolice, updatePolice, updatePoliceFleet } from './police.js';
+import { flashLights, nearestPolice, updateHeli, updatePolice, updatePoliceFleet } from './police.js';
 import { createPlayer, enterCar, exitCar, nearestEnterableCar, placePlayer, tryPunch, tryShoot, updatePlayerFoot } from './player.js';
 import { createTraffic, recycleTraffic, updateTraffic } from './traffic.js';
 import { collideCars, curbSpot, spawnParkedCars, stepCar } from './vehicles.js';
@@ -61,6 +61,7 @@ const G = {
   player,
   traffic,
   police,
+  heli: null, // the PD's air unit, flown by the police module when the heat is high
   crowd,
   runner: null,
   colliders: world.colliders,
@@ -495,6 +496,7 @@ function stepWorld(dt, input) {
   updatePoliceFleet(police, scene, stars(), target);
   updatePolice(police, dt, world.colliders, target, onWallCrash);
   flashLights(police, G.time);
+  G.heli = updateHeli(G.heli, scene, dt, stars(), target, world.colliders, G.time);
   updateCrowd(crowd, dt);
   collideCars(allCars(), onCarImpact);
   carPeopleCollisions();

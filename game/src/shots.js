@@ -6,6 +6,7 @@ import { groundHeight } from './city.js';
 import { CLUB_POS, LOT_POS } from './missions.js';
 import { enterCar, placePlayer } from './player.js';
 import { makeCar, placeCar } from './vehicles.js';
+import { aimHeliLight, ensureHeli, placeHeli } from './police.js';
 
 const THREE = window.THREE;
 const IDLE = { move: { x: 0, z: 0 }, run: false, throttle: 0, steer: 0, handbrake: false };
@@ -69,6 +70,15 @@ function stageChase(ctx) {
     unit.car.lightbar.red.color.setHex(i % 2 ? 0x57101d : 0xff2038);
     unit.car.lightbar.blue.color.setHex(i % 2 ? 0x2a7fff : 0x12295c);
   });
+  // At five stars the air unit is on him too: park the helicopter up the road and off his
+  // left shoulder, inside the camera's upper frame, with its searchlight cone on the Vireo.
+  const heli = ensureHeli(G, ctx.scene);
+  const hx = p.x + fx * 13 - rx * 5.5;
+  const hz = p.z + fz * 13 - rz * 5.5;
+  placeHeli(heli, hx, 8.8, hz, Math.atan2(p.x - hx, p.z - hz));
+  aimHeliLight(heli, p.x, p.z);
+  heli.rotor.rotation.y = 0.7; // a pleasing blade angle for the still
+  heli.beaconMat.color.setHex(0xff2222); // caught mid-blink
 }
 
 /** On foot in the neon downtown, pedestrians and traffic all around. */
