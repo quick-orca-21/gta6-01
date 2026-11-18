@@ -110,7 +110,10 @@ export class MissionRunner {
     this.dashMarker = makeMarker(0x37e0ff);
     scene.add(this.dashMarker.group);
     // Mara herself, waiting by the garage doors.
-    this.mara = makePerson(rng, { skin: 0x8a5a3b, shirt: 0x37e0ff, pants: 0x23232f });
+    this.mara = makePerson(rng, {
+      skin: 0x8a5a3b, shirt: 0x37e0ff, pants: 0x23232f,
+      hair: 0x140f0d, hairStyle: 'long', accessory: 'belt',
+    });
     this.mara.group.position.set(MARA_POS.x, 0.3, MARA_POS.z);
     this.mara.group.rotation.y = -2.2;
     scene.add(this.mara.group);

@@ -8,9 +8,13 @@ import { angleDelta, clamp, dist2d, turnToward } from './rng.js';
 
 const THREE = window.THREE;
 
-/** Create Rico: one recognisable figure — coral shirt, dark trousers, a pistol in his hand once armed. */
+/** Create Rico: one recognisable figure — coral shirt, dark trousers, white sneakers, a short
+ * crop and the gold chain he never takes off; a pistol in his hand once armed. */
 export function createPlayer(scene, rng) {
-  const body = makePerson(rng, { skin: 0xc68863, shirt: 0xff7847, pants: 0x23232f });
+  const body = makePerson(rng, {
+    skin: 0xc68863, shirt: 0xff7847, pants: 0x23232f,
+    hair: 0x241a14, hairStyle: 'short', shoe: 0xf0f0f0, accessory: 'chain',
+  });
   scene.add(body.group);
   const pistol = new THREE.Mesh(
     new THREE.BoxGeometry(0.09, 0.16, 0.42),

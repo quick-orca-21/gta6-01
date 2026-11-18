@@ -61,6 +61,7 @@ const G = {
   player,
   traffic,
   police,
+  crowd,
   runner: null,
   colliders: world.colliders,
   audio,
