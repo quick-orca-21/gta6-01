@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palm City Heat</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #160a24; }
+  #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .hidden { display: none !important; }
+
+  /* ---------- HUD ---------- */
+  #hud { position: fixed; inset: 0; pointer-events: none; font-family: "Segoe UI", system-ui, sans-serif; color: #fff; z-index: 5; }
+  #minimap-wrap { position: absolute; left: 18px; bottom: 18px; width: 196px; }
+  #minimap { width: 196px; height: 196px; border-radius: 10px; border: 2px solid rgba(255, 176, 102, .55);
+             box-shadow: 0 4px 24px rgba(0,0,0,.55); background: rgba(10, 8, 24, .82); display: block; }
+  #map-label { margin-top: 5px; font-size: 11px; letter-spacing: 3px; color: #ffc98a; text-align: center; text-shadow: 0 1px 4px #000; }
+  #stats { position: absolute; right: 20px; top: 16px; text-align: right; }
+  #stars { font-size: 30px; letter-spacing: 4px; line-height: 1; min-height: 32px;
+           color: #ffd23e; text-shadow: 0 0 10px rgba(255, 170, 0, .8), 0 2px 3px #000; }
+  #stars .off { color: rgba(255,255,255,.18); text-shadow: none; }
+  #cash { font-size: 27px; font-weight: 700; color: #7dff8a; text-shadow: 0 2px 4px #000; font-variant-numeric: tabular-nums; }
+  #cash small { font-size: 13px; color: #c9ffd0; letter-spacing: 2px; }
+  #health-wrap { margin-top: 6px; width: 190px; height: 13px; margin-left: auto; background: rgba(0,0,0,.55);
+                 border: 1px solid rgba(255,255,255,.35); border-radius: 7px; overflow: hidden; }
+  #health { height: 100%; width: 100%; background: linear-gradient(90deg, #ff5f6d, #ffc371); transition: width .18s; }
+  #carhealth-wrap { margin-top: 4px; width: 190px; height: 8px; margin-left: auto; background: rgba(0,0,0,.55);
+                    border: 1px solid rgba(255,255,255,.25); border-radius: 5px; overflow: hidden; }
+  #carhealth { height: 100%; width: 100%; background: #6fd3ff; transition: width .18s; }
+  #objective { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: min(560px, 62vw);
+               background: linear-gradient(180deg, rgba(16,8,32,.88), rgba(16,8,32,.72)); border: 1px solid rgba(255,176,102,.5);
+               border-left: 5px solid #ffb066; border-radius: 8px; padding: 9px 16px 10px; text-align: left;
+               box-shadow: 0 6px 22px rgba(0,0,0,.5); }
+  #obj-title { font-size: 12px; letter-spacing: 3px; color: #ffb066; font-weight: 700; }
+  #obj-text { font-size: 16.5px; margin-top: 2px; text-shadow: 0 1px 3px #000; }
+  #obj-dist { font-size: 12.5px; color: #9be7ff; margin-top: 1px; font-variant-numeric: tabular-nums; }
+  #prompt { position: absolute; bottom: 128px; left: 50%; transform: translateX(-50%); font-size: 17px; font-weight: 600;
+            background: rgba(10,6,22,.78); padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,.25);
+            text-shadow: 0 1px 3px #000; white-space: nowrap; }
+  #prompt b { color: #ffd23e; border: 1px solid #ffd23e; border-radius: 5px; padding: 0 7px; margin-right: 7px; font-size: 15px; }
+  #dialogue { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); width: min(680px, 78vw);
+              background: linear-gradient(180deg, rgba(12,6,26,.92), rgba(12,6,26,.85)); border: 1px solid rgba(155,231,255,.45);
+              border-radius: 10px; padding: 12px 18px 13px; box-shadow: 0 8px 28px rgba(0,0,0,.6); }
+  #dlg-name { font-size: 12.5px; letter-spacing: 2.5px; color: #9be7ff; font-weight: 700; }
+  #dlg-text { font-size: 17.5px; margin-top: 3px; line-height: 1.35; text-shadow: 0 1px 3px #000; }
+  #banner { position: absolute; top: 27%; left: 50%; transform: translateX(-50%); text-align: center; width: 90vw; }
+  #banner-big { font-size: 46px; font-weight: 800; letter-spacing: 5px; color: #ffd23e;
+                text-shadow: 0 0 22px rgba(255,150,0,.65), 0 3px 6px #000; }
+  #banner-sub { font-size: 19px; color: #fff; margin-top: 4px; text-shadow: 0 2px 5px #000; }
+  #speed { position: absolute; right: 22px; bottom: 20px; text-align: right; }
+  #speed-num { font-size: 40px; font-weight: 800; text-shadow: 0 2px 6px #000; font-variant-numeric: tabular-nums; }
+  #speed small { display: block; font-size: 11px; letter-spacing: 3px; color: #ffc98a; }
+  #toast { position: absolute; bottom: 236px; left: 50%; transform: translateX(-50%); font-size: 15.5px; color: #ffe9b0;
+           background: rgba(10,6,22,.75); padding: 6px 16px; border-radius: 16px; text-shadow: 0 1px 3px #000; white-space: nowrap; }
+  #vignette { position: fixed; inset: 0; pointer-events: none; z-index: 4; opacity: 0; transition: opacity .25s;
+              background: radial-gradient(ellipse at center, transparent 52%, rgba(200, 0, 20, .5) 100%); }
+
+  /* ---------- Overlays ---------- */
+  .overlay { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+             font-family: "Segoe UI", system-ui, sans-serif; color: #fff; }
+  #start-screen { background: linear-gradient(180deg, rgba(24,8,44,.42) 0%, rgba(24,8,44,.78) 78%, rgba(10,4,20,.94) 100%); }
+  .panel { text-align: center; max-width: 760px; padding: 30px 38px; }
+  #game-title { font-size: 74px; font-weight: 900; letter-spacing: 4px; line-height: .98; margin: 0;
+                background: linear-gradient(180deg, #ffe29b 15%, #ff9a5a 55%, #ff5f8f 100%);
+                -webkit-background-clip: text; background-clip: text; color: transparent;
+                filter: drop-shadow(0 4px 14px rgba(255, 110, 80, .45)); }
+  #game-sub { font-size: 15px; letter-spacing: 6px; color: #9be7ff; margin-top: 8px; text-shadow: 0 2px 6px #000; }
+  #story { font-size: 16.5px; line-height: 1.5; color: #f3e9ff; margin: 20px auto 4px; max-width: 620px; text-shadow: 0 2px 5px #000; }
+  .btn { pointer-events: auto; display: inline-block; margin: 14px 7px 0; padding: 13px 36px; font-size: 18px; font-weight: 700;
+         letter-spacing: 2px; color: #1c0b2e; background: linear-gradient(180deg, #ffd23e, #ff9a3e); border: none; border-radius: 9px;
+         cursor: pointer; box-shadow: 0 6px 20px rgba(255, 150, 40, .4); }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.ghost { background: rgba(20, 12, 40, .65); color: #ffd9a0; border: 1px solid #ffb066; box-shadow: none; }
+  #controls { margin: 22px auto 0; font-size: 13.5px; line-height: 1.85; color: #d9ccff; text-shadow: 0 1px 3px #000; }
+  #controls b { color: #ffd23e; font-weight: 700; }
+  #pause-screen, #end-screen { background: rgba(10, 4, 22, .72); }
+  #end-title { font-size: 68px; font-weight: 900; letter-spacing: 9px; margin: 0; color: #ff5f6d; text-shadow: 0 0 26px rgba(255, 40, 60, .6), 0 4px 8px #000; }
+  #end-title.busted { color: #6fb7ff; text-shadow: 0 0 26px rgba(60, 140, 255, .6), 0 4px 8px #000; }
+  #end-sub { font-size: 18px; margin-top: 8px; color: #eee; text-shadow: 0 2px 5px #000; }
+  .pause-title { font-size: 44px; font-weight: 800; letter-spacing: 6px; margin: 0 0 6px; color: #ffd9a0; text-shadow: 0 3px 8px #000; }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Palm City Heat: a third-person open-world crime game set in a neon coastal city"></canvas>
+<p id="status" role="status" aria-live="polite"></p>
+<div id="vignette"></div>
+
+<div id="hud" class="hidden">
+  <div id="objective" class="hidden">
+    <div id="obj-title">OBJECTIVE</div>
+    <div id="obj-text"></div>
+    <div id="obj-dist"></div>
+  </div>
+  <div id="stats">
+    <div id="stars"></div>
+    <div id="cash">$0</div>
+    <div id="health-wrap"><div id="health"></div></div>
+    <div id="carhealth-wrap" class="hidden"><div id="carhealth"></div></div>
+  </div>
+  <div id="minimap-wrap">
+    <canvas id="minimap" width="196" height="196"></canvas>
+    <div id="map-label">PALM CITY</div>
+  </div>
+  <div id="prompt" class="hidden"></div>
+  <div id="toast" class="hidden"></div>
+  <div id="dialogue" class="hidden">
+    <div id="dlg-name"></div>
+    <div id="dlg-text"></div>
+  </div>
+  <div id="banner" class="hidden">
+    <div id="banner-big"></div>
+    <div id="banner-sub"></div>
+  </div>
+  <div id="speed" class="hidden"><span id="speed-num">0</span><small>MPH</small></div>
+</div>
+
+<div id="start-screen" class="overlay">
+  <div class="panel">
+    <h1 id="game-title">PALM CITY<br>HEAT</h1>
+    <div id="game-sub">ONE CITY &middot; ONE NIGHT &middot; NO BRAKES</div>
+    <p id="story">Rico Vega is back in Palm City after five years away, with forty dollars, a borrowed
+      shirt and a reputation to rebuild. Mara Sol runs the Harborlight Garage now &mdash; and she has work
+      for a driver who isn&rsquo;t afraid of a little heat. Steal the wheels, run the jobs, dodge the
+      Palm City PD&hellip; and try to be somebody by sunrise.</p>
+    <div>
+      <button class="btn" id="btn-new">NEW GAME</button>
+      <button class="btn ghost hidden" id="btn-continue">CONTINUE</button>
+    </div>
+    <div id="controls">
+      <b>W A S D</b> move / drive &nbsp;&middot;&nbsp; <b>Shift</b> run &nbsp;&middot;&nbsp; <b>E</b> enter / steal car &nbsp;&middot;&nbsp;
+      <b>F</b> punch &nbsp;&middot;&nbsp; <b>G</b> pistol (once armed)<br>
+      <b>Mouse</b> orbit camera &nbsp;&middot;&nbsp; <b>Space</b> handbrake &nbsp;&middot;&nbsp; <b>P</b> pause &nbsp;&middot;&nbsp; <b>M</b> mute &nbsp;&middot;&nbsp; follow the gold markers
+    </div>
+  </div>
+</div>
+
+<div id="pause-screen" class="overlay hidden">
+  <div class="panel">
+    <h2 class="pause-title">PAUSED</h2>
+    <p id="pause-stats" style="font-size:16px; color:#e8ddff;"></p>
+    <button class="btn" id="btn-resume">RESUME</button>
+    <button class="btn ghost" id="btn-quit">QUIT TO TITLE</button>
+  </div>
+</div>
+
+<div id="end-screen" class="overlay hidden">
+  <div class="panel">
+    <h2 id="end-title">WASTED</h2>
+    <p id="end-sub"></p>
+    <button class="btn" id="btn-respawn">RESPAWN</button>
+  </div>
+</div>
+
+<script src="./vendor/three.min.js"></script>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
