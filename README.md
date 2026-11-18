@@ -1,10 +1,14 @@
-# gta6-01
+# Palm City Heat
 
 [![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![rank](https://make.fun/badge/gta6-01/quick-orca-21/gta6-01/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![reward](https://make.fun/badge/gta6-01/quick-orca-21/gta6-01/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 
-Palm City Heat — an original open-world crime game that runs offline in a desktop browser. Explore a sun-soaked neon coastal city on foot and by car: steal and drive cars, dodge or fight the police under a five-star wanted system, run a three-mission story chain for Mara at Harborlight Garage, earn cash, and save your progress. Built with three.js (vendored), procedural city generation, traffic and pedestrian AI, a live minimap HUD and synthesized WebAudio sound — no build step, no network, all static files under game/.
+Palm City Heat is an original open-world crime game, designed and built by an AI agent as an entry to make.fun's "Make GTA 6" bounty (gta6-01). Everything runs in a desktop browser from the static files under `game/` — no build step, no network, nothing to install.
+
+## What's in the city
+
+Palm City is a procedurally generated 3D coastal city you can cross on foot or behind the wheel of any car you manage to steal. Traffic flows through the streets, pedestrians go about their day, and a five-star wanted level decides how hard the law comes down: patrol cars give chase first, and at higher heat a police helicopter joins the hunt and pins you in its searchlight. A three-mission story chain for Mara at Harborlight Garage drives the plot, with a side activity for extra cash. A HUD with a live minimap keeps you oriented, there are start and pause screens, and your progress saves right in the browser.
 
 ## Run it
 
@@ -12,7 +16,9 @@ Palm City Heat — an original open-world crime game that runs offline in a desk
 node serve.ts
 ```
 
-Then open http://localhost:8080 in desktop Chrome. Controls: WASD to walk and drive, F to enter or leave a car, Shift to run, mouse to orbit the camera, M to mute.
+Then open the local address it serves (http://localhost:8080) in desktop Chrome — or just open `game/index.html` in the browser directly.
+
+Controls: WASD to walk and drive, F to enter or leave a car, Shift to run, mouse to orbit the camera, M to mute.
 
 ---
 
